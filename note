@@ -1,0 +1,120 @@
+Day 1:
+
+Infrastructure deployment
+-------------------------
+aws-> cloud formation 
+azure- ARM templates
+hashicorp terraform 
+
+Terraform  advanatages:
+-----------------------
+1. terraform code is simple to understand. 
+2. can be used with mutple vendors. (code will changed).
+3. config can be spilt into multiple files.
+4. can perform dry-run easily.
+5. importing of manual resources. 
+6. Resuable code with modules.
+7. terraform is fast. 
+
+Terraform  disadvanatages:
+--------------------------
+1. 3rd party , new services might not be availible.
+2. Bugs.
+3. Lack of support. 
+
+Terraform files:
+----------------
+1. main.tf and others tf files
+   eg: vpc.tf, sec.tf, ecs.tf 
+2. variables.tf 
+3. terraform.tfvars    #terraform variables 
+4. terraform.tfstate -> we need to save this fine very carefully 
+
+
+commands :
+---------
+#to instalize Terraform
+1. terraform init
+
+#to run the dry-run 
+2. terraform plan 
+    if tfvars fiole is differnet name use the below command. 
+    -> terraform plan --var-file dev-terraform.tfvars
+
+#to crewate the services in aws 
+
+3.         terraform apply --var-file dev-terraform.tfvars
+    when we use CI-CD tools we face the problem to  give yes always 
+    to avoid asking Enter-yes we use the below command.
+        -> terraform apply --var-file dev-terraform.tfvars --auto-approve
+    Be careful befor u use auto approve . command 
+
+# to destory in real time they wont use this command much 
+4. -> terraform apply --var-file dev-terraform.tfvars
+
+NOTE: if you create any service manual then u have to delete the manual 
+      then the terraform destory will work fine if not it will show errors .
+
+5. to know waht all we have deployed 
+   -> terraform state list 
+
+======================================================================================
+Day 2
+
+Disadvanatages with Azure ARM or AWs CF & Adv of terraform:
+1. JSON is complex, even thugh aws sup[port yaml.
+2. performing a dry-run is not easy and nt efective.
+3. The whole config will be in single file. 
+4. importing of manually created resources is not possible in Azure and complex job in aws.
+5. ARM & CF are slow.
+6. cloud Native ( ARM works for Azure, CF for AWS )
+7. code Validation is not easy.
+
+EXAMPLE : Problem-1 NOTE:
+---------------
+ok now if u have two tfvar files and there will be only one state file.
+when you try to excute file then it will try to delte the old tfvar and try to replace with new file 
+so here comes the problem when u have mulitplr tfvar files then the state file overwrite.
+
+TO OVERCAME THE above Problem we use workspace TOPIC. 
+                                     -----------------
+commands
+========                             
+-> terraform workspace
+   new,list,show,select,and delete,
+-> terraform workspace show 
+-> terraform workspace list 
+
+TO create:
+==========
+-> terraform workspace new dev
+-> terraform workspace new test
+after creating work-space new folder will be created Terraform.tfstate.d 
+inside the folder it eill keep sate file supprate for each env. By useing workspace 
+
+to get inside the workspace which we have created 
+-> terraform workspace select dev
+ 
+
+when we are inside the dev-workspace and try to deploy
+then it will create a state-file inside the dev-env only and keep supprate racord of state file. 
+
+To be honest workspace is used less in terraform. 
+be careful while useing workspace.
+
+when u want to delete workspace first you need to destory deployment inside that workspace and then delete the workspace. 
+
+EXAMPLE : Problem-2
+------------------
+if we have a multiple devpops eng here is the problem . 
+we can't share the state file bez it is located in my local laptop. ok 
+we can share the code in github but state file is not recomanded to keep in git-hub bez it as all the information in it. 
+
+you have to keep in centrilize loction.
+
+we can use te backend to overcame the above state file problem 
+==============================================================
+when we use the backend then it will take as a access key and security keyy from the local aws config file . 
+so chge the keys accounding to the problmens. 
+
+
